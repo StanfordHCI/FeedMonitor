@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "FeedWizard",
+  "description": "FeedWizard offers an improved experience on Twitter.",
+  "version": "0.0.20",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "menu/options.html"
+  },
+  "content_scripts": [{
+    "matches": ["*://twitter.com/*", "*://x.com/*", "*://localhost/*", "*://feedwizard.org/*"],
+    "run_at": "document_start",
+    "js": ["config.js", "libs/jquery.min.js", "libs/client.js",  "libs/timeme.min.js", "libs/utils.js",
+           "events.js", "logic.js", "survey.js", "launcher.js"],
+    "css": ["static/survey.css", "static/shared.css"]
+  }],
+  "web_accessible_resources": [{
+    "resources": ["injected.js", "injected_sampler.js", "icons/stanford_logo.png"],
+    "matches": ["*://twitter.com/*"]
+  }],
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage"
+  ]
+}
