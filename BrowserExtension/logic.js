@@ -1,7 +1,7 @@
 window.addEventListener("SaveBatch", function (evt) {
 
     console.log("SaveBatch:", evt.detail);
-    client.postRequest("/check_feed", {feed_info: evt.detail},
+    client.postRequest("/save_feed", {feed_info: evt.detail},
         function (res) {
             // OK
         },
