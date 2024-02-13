@@ -45,10 +45,6 @@ class MainHttpClient {
         this.postRequest("/event", params);
     }
 
-    saveSurveyAnswer(params = {}, callback = function(d) {}) {
-        this.postRequest("/survey_response", params, callback);
-    }
-
 
 }
 

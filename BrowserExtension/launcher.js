@@ -1,34 +1,31 @@
 const eventsManager = new EventsManager();
-
 Globals["tab_id"] = uuidv4();
 
 if (location.href.includes("twitter.com") || location.href.includes("x.com")) {
     // We are on Twitter
     chrome.storage.sync.get(['user_id'], function (items) {
-        let user_id = "HELLO"//items.user_id;
-        // let token = items.token;
-        if (user_id) {
-            sample_content(user_id);
-            eventsManager.run()
-        }
-        else {
-            console.log("Missing user id");
-        }
+        let user_id = items.user_id;
+
+        if (!user_id) {
+            user_id = uuidv4();
+            chrome.storage.sync.set({user_id: user_id}, function () {
+                run(user_id);
+            });
+        } else
+            run(user_id);
+
 
     });
-}
-else {
+} else {
     // We are on the hub server, nothing to do
     console.log("Extension running...")
 }
 
 
-window.addEventListener("UrlChanged", eventsManager.onUrlChange, false);
-
-
-function sample_content(user_id){
-    // console.log("HERE")
+function run(user_id) {
     Globals["user_id"] = user_id;
+    eventsManager.run()
+    window.addEventListener("UrlChanged", eventsManager.onUrlChange, false);
     ////////////////////////////////////////
     // Inject the script in the page space
     ////////////////////////////////////////
