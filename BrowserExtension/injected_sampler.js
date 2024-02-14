@@ -8,12 +8,18 @@ let httpRequestIdCounter = 0;
     const XHR = XMLHttpRequest.prototype;
     const open = XHR.open;
     const send = XHR.send;
+    const setRequestHeader = XHR.setRequestHeader;
+
+    XHR.setRequestHeader = function(header, value) {
+        this._requestHeaders[header] = value;
+        return setRequestHeader.apply(this, arguments);
+    };
 
     XHR.open = function (method, url) {
         this._url = url;
         this._id = httpRequestIdCounter++;
         this._startTime = (new Date()).toISOString();
-
+        this._requestHeaders = {};
         return open.apply(this, arguments);
     };
 
@@ -43,6 +49,8 @@ let httpRequestIdCounter = 0;
                         window.dispatchEvent(event);
 
                     }
+
+                    console.log("Request Headers for ID " + this._id + ":", this._requestHeaders);
 
                     callback.apply(this, arguments);
                 }
