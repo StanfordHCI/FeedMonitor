@@ -1,4 +1,6 @@
 # <img src="icons/speedometer.png" width="48"/> Feedometer
 
 
-A blueprint to measure your Twitter/X activites.
+A blueprint for a browser extension to measure Twitter/X activites and manipulate the feed.
+
+Compatibility: Chrome and Edge.
