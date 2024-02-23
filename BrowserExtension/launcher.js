@@ -30,7 +30,7 @@ function run(user_id) {
     // Inject the script in the page space
     ////////////////////////////////////////
     const s = document.createElement('script');
-    s.src = chrome.runtime.getURL('injected_sampler.js');
+    s.src = chrome.runtime.getURL('injected.js');
     s.onload = function () {
         this.remove();
     };

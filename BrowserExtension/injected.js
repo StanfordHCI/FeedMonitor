@@ -1,7 +1,8 @@
 console.log("FeedWizard enabled - Sampler Only");
 
-const SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline"];
+const SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline", "Following"];
 let httpRequestIdCounter = 0;
+let event_handlers = {};
 
 (function (xhr) {
 
@@ -10,7 +11,7 @@ let httpRequestIdCounter = 0;
     const send = XHR.send;
     const setRequestHeader = XHR.setRequestHeader;
 
-    XHR.setRequestHeader = function(header, value) {
+    XHR.setRequestHeader = function (header, value) {
         this._requestHeaders[header] = value;
         return setRequestHeader.apply(this, arguments);
     };
@@ -35,6 +36,12 @@ let httpRequestIdCounter = 0;
 
                     if (response.length > 0) {
 
+                        event_handlers[this._id] = {
+                            callback: callback,
+                            source: this,
+                            arguments: arguments
+                        }
+
                         const event = new CustomEvent("SaveBatch",
                             {
                                 detail: {
@@ -48,11 +55,11 @@ let httpRequestIdCounter = 0;
 
                         window.dispatchEvent(event);
 
+                        console.log("Request Headers for ID " + this._id + ":", this._requestHeaders);
+                        console.log("Waiting for the green light for connection #" + this._id);
                     }
 
-                    console.log("Request Headers for ID " + this._id + ":", this._requestHeaders);
 
-                    callback.apply(this, arguments);
                 }
 
             }
@@ -62,8 +69,30 @@ let httpRequestIdCounter = 0;
     }
 
 
-
 })(XMLHttpRequest);
+
+
+window.addEventListener("CustomFeedReady", function (evt) {
+    console.log("Green light for connection #" + evt.detail.id);
+
+    let event_handler = event_handlers[evt.detail.id]
+
+    Object.defineProperty(event_handler['source'], 'responseText', {
+        writable: true
+    });
+
+    Object.defineProperty(event_handler['source'], 'response', {
+        writable: true
+    });
+
+    event_handler['source'].responseText = evt.detail.response;
+    event_handler['source'].response = evt.detail.response;
+
+    console.log("CustomFeedReady: ", event_handler['source']);
+
+    event_handler['callback'].apply(event_handler['source'], event_handler['arguments'])
+}, false);
+
 
 /*****************************
  * Change URL event

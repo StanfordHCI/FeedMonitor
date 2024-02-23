@@ -16,7 +16,7 @@
            "events.js", "logic.js", "launcher.js"]
   }],
   "web_accessible_resources": [{
-    "resources": ["injected_sampler.js"],
+    "resources": ["injected.js"],
     "matches": ["*://twitter.com/*"]
   }],
   "permissions": [

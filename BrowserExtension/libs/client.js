@@ -42,7 +42,7 @@ class MainHttpClient {
 
     logEvent(eventType, params = {}) {
         params['event_type'] = eventType;
-        // this.postRequest("/event", params);
+        this.postRequest("/event", params);
     }
 
 

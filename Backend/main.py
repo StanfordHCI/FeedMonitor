@@ -1,9 +1,7 @@
 import json
 import os
-from functools import wraps
-
 import yaml
-from flask import Flask, request, render_template, redirect, jsonify, g, make_response
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 with open('config.yaml', 'r') as file:
@@ -14,6 +12,7 @@ CORS(app)
 
 os.makedirs("data", exist_ok=True)
 
+
 @app.route("/", methods=['GET'])
 def index():
     return "Welcome."
@@ -23,16 +22,23 @@ def index():
 def event():
     user_id = request.form.get('user_id')
     with open("data/events_{}.json".format(user_id), "a") as f:
-        f.write(json.dumps(request.form)+"\n")
+        f.write(json.dumps(request.form) + "\n")
     return jsonify({"success": True})
 
 
-@app.route("/save_feed", methods=['POST'])
-def save_feed():
+@app.route("/get_feed", methods=['POST'])
+def get_feed():
     user_id = request.form.get('user_id')
     with open("data/feed_{}.json".format(user_id), "a") as f:
-        f.write(json.dumps(request.form)+"\n")
-    return jsonify({"success": True})
+        f.write(json.dumps(request.form) + "\n")
+
+    payload = json.loads(request.form["data"])
+    url = payload["url"]
+    feed_type = payload["type"]
+    custom_feed = payload["feed_info"]
+
+    response = {"feed": custom_feed}
+    return jsonify(response)
 
 
 if __name__ == '__main__':
