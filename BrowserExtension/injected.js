@@ -1,4 +1,4 @@
-console.log("FeedWizard enabled - Sampler Only");
+console.log("Feedometer enabled");
 
 const SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline", "Following"];
 let httpRequestIdCounter = 0;

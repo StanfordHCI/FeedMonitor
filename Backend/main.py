@@ -33,8 +33,6 @@ def get_feed():
         f.write(json.dumps(request.form) + "\n")
 
     payload = json.loads(request.form["data"])
-    url = payload["url"]
-    feed_type = payload["type"]
     custom_feed = payload["feed_info"]
 
     response = {"feed": custom_feed}

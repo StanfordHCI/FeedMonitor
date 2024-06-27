@@ -17,7 +17,6 @@ if (location.href.includes("twitter.com") || location.href.includes("x.com")) {
 
     });
 } else {
-    // We are on the hub server, nothing to do
     console.log("Extension running...")
 }
 
@@ -26,9 +25,6 @@ function run(user_id) {
     Globals["user_id"] = user_id;
     eventsManager.run()
     window.addEventListener("UrlChanged", eventsManager.onUrlChange, false);
-    ////////////////////////////////////////
-    // Inject the script in the page space
-    ////////////////////////////////////////
     const s = document.createElement('script');
     s.src = chrome.runtime.getURL('injected.js');
     s.onload = function () {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Feedometer",
-  "description": "Feedometer offers a set of measurements of your Twitter experience.",
+  "name": "FeedMonitor",
+  "description": "FeedMonitor offers a set of measurements of your Twitter experience.",
   "version": "0.0.1",
   "icons": {
     "16": "icons/icon16.png",
@@ -10,14 +10,14 @@
     "128": "icons/icon128.png"
   },
   "content_scripts": [{
-    "matches": ["*://twitter.com/*", "*://x.com/*", "*://localhost/*"],
+    "matches": ["*://x.com/*", "*://twitter.com/*", "*://localhost/*"],
     "run_at": "document_start",
     "js": ["config.js", "libs/jquery.min.js", "libs/client.js",  "libs/timeme.min.js", "libs/utils.js",
            "events.js", "logic.js", "launcher.js"]
   }],
   "web_accessible_resources": [{
     "resources": ["injected.js"],
-    "matches": ["*://twitter.com/*"]
+    "matches": ["*://x.com/*", "*://twitter.com/*"]
   }],
   "permissions": [
     "storage"
