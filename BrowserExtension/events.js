@@ -1,16 +1,10 @@
 class EventsManager {
-    // eventsQueue = [];
-
 
     static tweetIdRegex = "\\/status\\/([0-9]+)";
-
-    // static allRenderedTweetsIds = new Set();
 
     static previousRenderGroup = new Set()
 
     static statusTimer = null;
-
-    static enableDebug = false;
 
     static renderedTweetHistory = new Set();
 
@@ -52,15 +46,24 @@ class EventsManager {
                 let tweetsDOMReferences = {}
                 let renderedTweets = new Set()
                 for (let t = 0; t < tweets.length; t++) {
+                    let current_id = "";
                     let links = $("a[href*=status]", tweets[t]);
                     if (links)
                         for (let i = 0; i < links.length; i++) {
                             let tweet_id = links[i].href.match(EventsManager.tweetIdRegex);
-                            if (tweet_id!=null && tweet_id.length>0) {
-                                renderedTweets.add(tweet_id[1])
-                                tweetsDOMReferences[tweet_id[1]] = tweets[t];
+                            if (tweet_id != null && tweet_id.length > 0) {
+                                current_id = tweet_id[1];
+                                renderedTweets.add(current_id)
+                                tweetsDOMReferences[current_id] = tweets[t];
                             }
                         }
+                    if (!has_attribute(tweets[t], "with_listeners")) {
+                        $("a", $(tweets[t])).click(function (e) {
+                            let href = $(e.currentTarget).attr("href");
+                            this.onLinkClick({"href": href, "tweet_id": current_id});
+                        }.bind(this));
+                        $(tweets[t]).attr("with_listeners", "TRUE")
+                    }
                 }
                 if (renderedTweets.size > 0 && !eqSet(EventsManager.previousRenderGroup, renderedTweets)) {
                     this.onCheckRenderStatus(renderedTweets);
@@ -81,17 +84,18 @@ class EventsManager {
     }
 
     onCreateTweet(data) {
-        console.log("onCreateTweet", data.detail);
         client.logEvent("CreateTweet", data.detail);
     }
 
+    onLinkClick(data) {
+        client.logEvent("LinkClick", data);
+    }
+
     onCreateRetweet(data) {
-        console.log("CreateRetweet", data.detail);
         client.logEvent("CreateRetweet", data.detail);
     }
 
     onFavoriteTweet(data) {
-        console.log("FavoriteTweet", data.detail);
         client.logEvent("FavoriteTweet", data.detail);
     }
 
@@ -101,10 +105,19 @@ class EventsManager {
         let currentTweet = $(tweetDOM)
         window.addEventListener("FeedScroll", function (evt) {
             if (!EventsManager.visualisedTweets.has(tweetId) && currentTweet.isInViewport()) {
-                console.log("TweetVisible", tweetId);
                 client.logEvent("TweetVisible", {tweetId: tweetId});
 
                 EventsManager.visualisedTweets.add(tweetId);
+
+                setTimeout(function () {
+                    if (currentTweet.isInViewport())
+                        client.logEvent("TweetVisible1Sec", {tweetId: tweetId});
+                }, 1000);
+
+                setTimeout(function () {
+                    if (currentTweet.isInViewport())
+                        client.logEvent("TweetVisible3Sec", {tweetId: tweetId});
+                }, 3000);
             }
         }, false);
 
@@ -132,35 +145,24 @@ class EventsManager {
     }
 
     onTabStateCheck() {
-        console.log("Tab state: " + document.visibilityState)
         client.logEvent("Alive", {"url": document.URL, "visibility": document.visibilityState});
     }
 
     userLeaveTab() {
         client.logEvent("UserLeaveTab", {"url": document.URL});
-        console.log("Leave ")
     }
 
     userReturnToTab() {
         client.logEvent("UserReturnOnTab", {"url": document.URL});
-        console.log("Return")
     }
 
     onUnload() {
-        console.log("Unload")
         let timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds();
         client.logEvent("PageUnload", {"timeOnPage": timeSpentOnPage})
     }
 
     onUrlChange(e) {
-        console.log("Page loaded " + document.URL)
         client.logEvent("UrlChange", {"url": document.URL})
-    }
-
-    //NOT USED
-    stop() {
-        clearInterval(EventsManager.statusTimer);
-        TimeMe.stopTimer();
     }
 
 
@@ -170,7 +172,6 @@ class EventsManager {
     }
 
     onKeyDown(e) {
-        console.log(e.keyCode)
         if (EventsManager.lockScroll) {
             if (EventsManager.keys[e.keyCode])
                 e.preventDefault();

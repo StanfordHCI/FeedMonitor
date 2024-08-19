@@ -1,49 +1,67 @@
-console.log("Feedometer enabled");
+function extensionConflict() {
+    // CHOOSE WHAT TO DO IF THE USER HAS A CONFLICTING EXTENSION
+    // i.e., redirect to a message
+    alert("Conflict: The extension detected a conflict.");
+}
 
-const SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline", "Following"];
-let httpRequestIdCounter = 0;
-let event_handlers = {};
+if (typeof window.SUBSCRIBED !== "undefined") {
+    extensionConflict();
+} else {
+    // Define your variables only if they are not already defined
+    window.SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline"];
+    window.httpRequestIdCounter = 0;
+    window.event_handlers = {};
 
-(function (xhr) {
+    function isNativeFunction(func) {
+        return func.toString().indexOf('[native code]') !== -1;
+    }
 
-    const XHR = XMLHttpRequest.prototype;
-    const open = XHR.open;
-    const send = XHR.send;
-    const setRequestHeader = XHR.setRequestHeader;
+    (function (xhr) {
 
-    XHR.setRequestHeader = function (header, value) {
-        this._requestHeaders[header] = value;
-        return setRequestHeader.apply(this, arguments);
-    };
+        const XHR = XMLHttpRequest.prototype;
+        const open = XHR.open;
+        const send = XHR.send;
+        const setRequestHeader = XHR.setRequestHeader;
 
-    XHR.open = function (method, url) {
-        this._url = url;
-        this._id = httpRequestIdCounter++;
-        this._startTime = (new Date()).toISOString();
-        this._requestHeaders = {};
-        return open.apply(this, arguments);
-    };
+        const isXHRModified = !isNativeFunction(XMLHttpRequest.prototype.open) ||
+            !isNativeFunction(XMLHttpRequest.prototype.send) ||
+            !isNativeFunction(XMLHttpRequest.prototype.setRequestHeader);
 
-    XHR.send = function (postData) {
+        if (isXHRModified)
+            extensionConflict();
 
-        let actionName = new URL(this._url).pathname.split("/").at(-1);
-        // If we subscribed for this call
-        if (SUBSCRIBED.includes(actionName)) {
-            let callback = this.onreadystatechange
-            this.onreadystatechange = function () {
-                if (this.readyState === XMLHttpRequest.DONE) {
-                    let response = this.responseText
+        XHR.setRequestHeader = function (header, value) {
+            this._requestHeaders[header] = value;
+            return setRequestHeader.apply(this, arguments);
+        };
 
-                    if (response.length > 0) {
+        XHR.open = function (method, url) {
+            this._url = url;
+            this._id = window.httpRequestIdCounter++;
+            this._startTime = (new Date()).toISOString();
+            this._requestHeaders = {};
+            return open.apply(this, arguments);
+        };
 
-                        event_handlers[this._id] = {
-                            callback: callback,
-                            source: this,
-                            arguments: arguments
-                        }
+        XHR.send = function (postData) {
 
-                        const event = new CustomEvent("SaveBatch",
-                            {
+            let actionName = new URL(this._url).pathname.split("/").at(-1);
+            // If we subscribed for this call
+            if (window.SUBSCRIBED.includes(actionName)) {
+                let callback = this.onreadystatechange;
+                this.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        let response = this.responseText;
+
+                        if (response.length > 0) {
+
+                            window.event_handlers[this._id] = {
+                                callback: callback,
+                                source: this,
+                                arguments: arguments
+                            };
+
+                            const event = new CustomEvent("SaveBatch", {
                                 detail: {
                                     id: this._id,
                                     url: this._url,
@@ -53,29 +71,23 @@ let event_handlers = {};
                                 }
                             });
 
-                        window.dispatchEvent(event);
+                            window.dispatchEvent(event);
 
-                        console.log("Request Headers for ID " + this._id + ":", this._requestHeaders);
-                        console.log("Waiting for the green light for connection #" + this._id);
+                            console.log("Request Headers for ID " + this._id + ":", this._requestHeaders);
+                            console.log("Waiting for the green light for connection #" + this._id);
+                        }
                     }
-
-
-                }
-
+                };
             }
-
-        }
-        return send.apply(this, arguments);
-    }
-
-
-})(XMLHttpRequest);
-
+            return send.apply(this, arguments);
+        };
+    })(XMLHttpRequest);
+}
 
 window.addEventListener("CustomFeedReady", function (evt) {
     console.log("Green light for connection #" + evt.detail.id);
 
-    let event_handler = event_handlers[evt.detail.id]
+    let event_handler = window.event_handlers[evt.detail.id]
 
     Object.defineProperty(event_handler['source'], 'responseText', {
         writable: true

@@ -37,3 +37,8 @@ String.prototype.escape = function () {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
 };
+
+function has_attribute(dom, attribute) {
+    let with_listener = $(dom).attr(attribute);
+    return typeof with_listener !== 'undefined' && with_listener !== false
+}

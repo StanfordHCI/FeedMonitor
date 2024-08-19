@@ -13,7 +13,6 @@ class MainHttpClient {
         return {
             tab_id: Globals.tab_id,
             user_id: Globals.user_id,
-            // token: Globals.token,
             url: document.URL,
             extension_version: this.version,
             data: JSON.stringify(params)
@@ -42,6 +41,7 @@ class MainHttpClient {
 
     logEvent(eventType, params = {}) {
         params['event_type'] = eventType;
+        console.log("Logging:", params)
         this.postRequest("/event", params);
     }
 
