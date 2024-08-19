@@ -11,17 +11,16 @@ This repository provides a simplified blueprint for a browser extension designed
 This project comprises two main components:
 
 1. **Browser Extension (Frontend):**
-   - The browser extension is responsible for intercepting the Twitter/X feed and modifying the content displayed to the user. This exaple shows how to achieved this by the intercepting network requests.
+   - The browser extension is responsible for intercepting the Twitter/X feed and modifying the content displayed to the user. This example shows how to achieve this by intercepting network requests.
    - Key files include:
      - `events.js`: Manages user interactions and event handling within the extension.
-     - `logic.js`: Contains the core logic for re-ranking and modifying the feed. This example sent the content to the server for the reranking.
+     - `logic.js`: Contains the core logic for re-ranking and modifying the feed. This example sends the content to the server for re-ranking.
      - `injected.js`: Injects custom scripts into the Twitter/X web page to override XMLHttpRequest behavior.
      - `launcher.js`: Initializes the extension and sets up necessary configurations.
      - `libs/`: Contains utility scripts and libraries, such as jQuery, to support the extension's functionality.
 
 2. **Backend:**
-   - The backend component must handle processing tasks such as scoring and re-ranking posts. It manages data storage and communication with the frontend.
-
+   - The backend component handles processing tasks such as scoring and re-ranking posts. It manages data storage and communication with the frontend.
 
 ---
 
@@ -31,7 +30,7 @@ This project comprises two main components:
    - Clone this repository and load the `BrowserExtension` folder as an unpacked extension in your Chrome or Edge browser.
 
 2. **Backend Setup:**
-   - Set up a Python environment and install the necessary dependencies with `pip install -r requirements.txt`. Start the server with `python main.py`. In production we recommend to use use WSGI server (See Gunicorn). In this implementation, the server is minimal and it can be easily ported in other languages.
+   - Set up a Python environment and install the necessary dependencies with `pip install -r requirements.txt`. Start the server with `python main.py`. In production, we recommend using a WSGI server (e.g., Gunicorn). In this implementation, the server is minimal and can be easily ported to other languages.
 
 3. **Running the Extension:**
    - Once installed, the extension will automatically intercept your Twitter/X feed and apply the configured interventions. Use the console logs to monitor the intercepted events.
@@ -56,7 +55,7 @@ This project comprises two main components:
 
 ## Paper Reference
 
-This project is based on the research article:
+Refer to this article for more information:
 
 **Reranking Social Media Feeds: A Practical Guide for Field Experiments**
 
