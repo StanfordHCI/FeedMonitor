@@ -10,13 +10,18 @@ class MainHttpClient {
     }
 
     makeRequestBody(params) {
-        return {
+        let p = {
             tab_id: Globals.tab_id,
             user_id: Globals.user_id,
             url: document.URL,
             extension_version: this.version,
             data: JSON.stringify(params)
         };
+        let body = new FormData();
+        for (const [key, value] of Object.entries(p)) {
+            body.append(key, value);
+        }
+        return body
     }
 
     postRequest(path, params,
@@ -24,19 +29,24 @@ class MainHttpClient {
                 callback_err = function (s) {
     }) {
         let body = this.makeRequestBody(params);
-        $.post(this.getUrl(path),
-            body,
-            function (data, status) {
-
-                if (status == 'success') {
-                    callback(data);
+        fetch(this.getUrl(path), {
+            method: 'POST',
+            body: body
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
                 } else {
-                    callback_err(status);
+                    throw new Error('Network response was not ok: ' + response.statusText);
                 }
-            }, "json").fail(function(xhr, status, error) {
-                console.log(path, " failed with status", status, "Calling error callback");
-            callback_err(status);
-        });
+            })
+            .then(data => {
+                callback(data);
+            })
+            .catch(error => {
+                console.log(path, " failed with error:", error.message, "Calling error callback");
+                callback_err(error.message);
+            });
     }
 
     logEvent(eventType, params = {}) {

@@ -1,11 +1,25 @@
-function extensionConflict() {
+function extensionConflict(origin) {
     // CHOOSE WHAT TO DO IF THE USER HAS A CONFLICTING EXTENSION
     // i.e., redirect to a message
-    alert("Conflict: The extension detected a conflict.");
+    switch (origin) {
+        case 'sameCode':
+            // There is already an injected script.
+            alert("Conflict: The extension detected a conflict. Are you enrolled in 2 studies?");
+            break;
+        case 'isXHRModified':
+            // There is another extension intercepting the network requests.
+            // This could be an ads blocker (no problem), or a similar study (potential problems)
+            alert("Conflict: The extension detected a potential conflict.");
+            break;
+        default:
+            console.log("Conflict: unspecified reason.");
+    }
+
 }
 
 if (typeof window.SUBSCRIBED !== "undefined") {
-    extensionConflict();
+    console.error("window.SUBSCRIBED already defined. Conflict.");
+    extensionConflict("sameCode");
 } else {
     // Define your variables only if they are not already defined
     window.SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline"];
@@ -28,7 +42,7 @@ if (typeof window.SUBSCRIBED !== "undefined") {
             !isNativeFunction(XMLHttpRequest.prototype.setRequestHeader);
 
         if (isXHRModified)
-            extensionConflict();
+            extensionConflict("isXHRModified");
 
         XHR.setRequestHeader = function (header, value) {
             this._requestHeaders[header] = value;

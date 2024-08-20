@@ -1,8 +1,10 @@
 const eventsManager = new EventsManager();
 Globals["tab_id"] = uuidv4();
 
-if (location.href.includes("twitter.com") || location.href.includes("x.com")) {
-    // We are on Twitter
+// IMPORTANT: Implement a logic to enable/disable the extension.
+Globals["isEnabled"] = true;
+
+if ((location.href.includes("twitter.com") || location.href.includes("x.com")) && Globals["isEnabled"]) {
     // Customize this function. Where do you get the user_id?
     // Here it is randomly assigned (and stored) at the first load.
     // More info Sec. 5.3: https://arxiv.org/abs/2406.19571
