@@ -68,3 +68,11 @@ Refer to this article for more information:
 *Tiziano Piccardi, Martin Saveski, Chenyan Jia, Jeffrey Hancock, Jeanne L. Tsai, Michael S. Bernstein*
 
 Read the full paper [here](https://arxiv.org/abs/2406.19571).
+
+### Please cite as:
+```@article{piccardi2024reranking,
+  title={Reranking Social Media Feeds: A Practical Guide for Field Experiments},
+  author={Piccardi, Tiziano and Saveski, Martin and Jia, Chenyan and Hancock, Jeffrey and Tsai, Jeanne L and Bernstein, Michael S},
+  journal={arXiv preprint arXiv:2406.19571},
+  year={2024}
+}```
