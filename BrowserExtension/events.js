@@ -37,7 +37,7 @@ class EventsManager {
         EventsManager.statusTimer = window.setInterval(function () {
 
             // If no scroll ignore
-            if (!document.URL.endsWith("home") || !EventsManager.scrolled)
+            if (!new URL(document.URL).pathname.endsWith("home") || !EventsManager.scrolled)
                 return;
 
             let tweets = $("article");
