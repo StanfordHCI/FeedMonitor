@@ -75,7 +75,7 @@ if (typeof window.SUBSCRIBED !== "undefined") {
                                 arguments: arguments
                             };
 
-                            const event = new CustomEvent("SaveBatch", {
+                            const event = new CustomEvent("ProcessResponse", {
                                 detail: {
                                     id: this._id,
                                     url: this._url,

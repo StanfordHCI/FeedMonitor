@@ -78,3 +78,23 @@ Read the full paper [here](https://arxiv.org/abs/2406.19571).
   year={2024}
 }
 ```
+
+**Reranking partisan animosity in algorithmic social media feeds alters affective polarization**
+
+This work constitutes the foundation for the following article:
+
+[https://www.science.org/doi/10.1126/science.adu5584](https://www.science.org/doi/10.1126/science.adu5584)
+
+### Please cite as:
+```
+
+@article{
+doi:10.1126/science.adu5584,
+author = {Tiziano Piccardi  and Martin Saveski  and Chenyan Jia  and Jeffrey Hancock  and Jeanne L. Tsai  and Michael S. Bernstein },
+title = {Reranking partisan animosity in algorithmic social media feeds alters affective polarization},
+journal = {Science},
+year = {2025},
+doi = {10.1126/science.adu5584},
+}
+```
+
