@@ -1,8 +1,8 @@
-# <img src="icons/speedometer.png" width="48"/> Browser Extension Blueprint for Measuring and Manipulating Twitter/X Activities
+# <img src="icons/speedometer.png" width="48"/> Browser Extension Blueprint for Measuring Activities and Modifying the Feed
 
-This repository provides a simplified blueprint for a browser extension designed to measure activities on Twitter/X and manipulate the feed in real-time.
+This repository provides a simplified blueprint for a browser extension designed to **measure user activities** and **modify the social media feed in real time**. It is compatible with **X (Twitter)** but can be adapted for other platforms.
 
-**Compatibility:** Chrome and Edge.
+**Compatibility:** Chrome and Edge
 
 ---
 
