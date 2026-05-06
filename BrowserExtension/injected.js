@@ -95,6 +95,12 @@ if (typeof window.SUBSCRIBED !== "undefined") {
      */
     window.SUBSCRIBED = ["HomeTimeline", "HomeLatestTimeline"];
 
+    const ACTION_EVENTS = ['FavoriteTweet', 'CreateRetweet', 'CreateTweet'];
+
+    function dispatchActionEvent(name, bodyText) {
+        try { window.dispatchEvent(new CustomEvent(name, {detail: JSON.parse(bodyText)})); } catch (e) {}
+    }
+
     /**
      * Monotonically increasing counter used to assign a unique ID to every
      * intercepted request. The ID is used to correlate:
@@ -198,7 +204,12 @@ if (typeof window.SUBSCRIBED !== "undefined") {
          */
         XHR.send = function (postData) {
 
-            let actionName = new URL(this._url).pathname.split("/").at(-1);
+            let actionName;
+            try {
+                actionName = new URL(this._url, location.href).pathname.split("/").at(-1);
+            } catch (e) {
+                return send.apply(this, arguments);
+            }
 
             if (window.SUBSCRIBED.includes(actionName)) {
                 let callback = this.onreadystatechange;
@@ -235,6 +246,10 @@ if (typeof window.SUBSCRIBED !== "undefined") {
                         }
                     }
                 };
+            }
+
+            else if (ACTION_EVENTS.includes(actionName)) {
+                dispatchActionEvent(actionName, postData);
             }
             return send.apply(this, arguments);
         };
@@ -274,8 +289,15 @@ if (typeof window.SUBSCRIBED !== "undefined") {
                 return originalFetch.apply(this, arguments);
             }
 
-            // Not a subscribed endpoint — pass through unmodified.
+            // Not a subscribed endpoint — pass through, but dispatch action events.
             if (!window.SUBSCRIBED.includes(actionName)) {
+                if (ACTION_EVENTS.includes(actionName)) {
+                    if (input instanceof Request) {
+                        input.clone().text().then(text => dispatchActionEvent(actionName, text));
+                    } else if (init && typeof init.body === 'string') {
+                        dispatchActionEvent(actionName, init.body);
+                    }
+                }
                 return originalFetch.apply(this, arguments);
             }
 
@@ -326,7 +348,6 @@ if (typeof window.SUBSCRIBED !== "undefined") {
         };
     })();
 
-} // end of SUBSCRIBED guard
 
 
 /*******************************************************************************
@@ -355,6 +376,7 @@ window.addEventListener("CustomFeedReady", function (evt) {
     console.log("Green light for connection #" + evt.detail.id);
 
     let event_handler = window.event_handlers[evt.detail.id];
+    delete window.event_handlers[evt.detail.id];
 
     if (event_handler.type === 'fetch') {
         // Fetch path: resolve the pending Promise with the modified body.
@@ -437,3 +459,5 @@ window.addEventListener('locationchange', function () {
 
 // Also fire once for the initial page load (no history event is emitted then).
 window.dispatchEvent(new Event('locationchange'));
+
+} // end of SUBSCRIBED guard
